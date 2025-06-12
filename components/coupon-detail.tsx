@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, MapPin, Calendar, Clock, Share2, Heart, Mountain, Wine } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context"
+import { LanguageToggle } from "@/components/language-toggle"
 import Image from "next/image"
 
 interface CouponDetailProps {
@@ -12,6 +14,8 @@ interface CouponDetailProps {
 }
 
 export function CouponDetail({ coupon, onBack }: CouponDetailProps) {
+  const { t } = useLanguage()
+
   return (
     <div className="h-full overflow-y-auto">
       {/* Header con botón de regreso */}
@@ -25,8 +29,9 @@ export function CouponDetail({ coupon, onBack }: CouponDetailProps) {
           >
             <ArrowLeft className="w-4 h-4" />
           </Button>
-          <h1 className="font-semibold text-gray-800 text-sm">Detalle del Cupón</h1>
+          <h1 className="font-semibold text-gray-800 text-sm">{t("detail.title")}</h1>
           <div className="flex space-x-1">
+            <LanguageToggle />
             <Button
               variant="ghost"
               size="sm"
@@ -63,7 +68,7 @@ export function CouponDetail({ coupon, onBack }: CouponDetailProps) {
               } backdrop-blur-sm text-xs`}
             >
               {coupon.category === "Nieve" ? <Mountain className="w-2 h-2 mr-1" /> : <Wine className="w-2 h-2 mr-1" />}
-              {coupon.category}
+              {coupon.category === "Nieve" ? t("home.snow") : t("home.wine")}
             </Badge>
             <Badge className="bg-red-500/90 text-white font-bold px-3 py-1 text-sm backdrop-blur-sm">
               {coupon.discount}
@@ -88,11 +93,13 @@ export function CouponDetail({ coupon, onBack }: CouponDetailProps) {
             </div>
             <div className="flex items-center text-gray-700 text-sm">
               <Calendar className="w-4 h-4 mr-2 text-green-500" />
-              <span>Válido hasta {coupon.validUntil}</span>
+              <span>
+                {t("detail.validUntil")} {coupon.validUntil}
+              </span>
             </div>
             <div className="flex items-center text-gray-700 text-sm">
               <Clock className="w-4 h-4 mr-2 text-orange-500" />
-              <span>Disponible 24/7</span>
+              <span>{t("detail.available")}</span>
             </div>
           </div>
         </Card>
@@ -100,12 +107,12 @@ export function CouponDetail({ coupon, onBack }: CouponDetailProps) {
         {/* Precios */}
         <Card className="p-4 bg-gradient-to-r from-green-50/50 to-blue-50/50 backdrop-blur-xl border border-white/30">
           <div className="text-center space-y-1">
-            <p className="text-xs text-gray-600">Precio original</p>
+            <p className="text-xs text-gray-600">{t("detail.originalPrice")}</p>
             <p className="text-lg text-gray-500 line-through">{coupon.originalPrice}</p>
-            <p className="text-xs text-green-600 font-medium">Tu precio con descuento</p>
+            <p className="text-xs text-green-600 font-medium">{t("detail.discountPrice")}</p>
             <p className="text-2xl font-bold text-green-600">{coupon.discountedPrice}</p>
             <p className="text-xs text-gray-600">
-              Ahorras:{" "}
+              {t("detail.youSave")}{" "}
               <span className="font-bold text-red-500">
                 $
                 {Number.parseInt(coupon.originalPrice.replace(/[$.]/g, "")) -
@@ -117,7 +124,7 @@ export function CouponDetail({ coupon, onBack }: CouponDetailProps) {
 
         {/* Código QR */}
         <Card className="p-4 bg-white/30 backdrop-blur-xl border border-white/40 text-center">
-          <h3 className="font-bold text-sm text-gray-800 mb-3">Código QR para canjear</h3>
+          <h3 className="font-bold text-sm text-gray-800 mb-3">{t("detail.qrTitle")}</h3>
           <div className="flex justify-center mb-3">
             <div className="p-3 bg-white rounded-xl shadow-lg">
               <Image
@@ -129,36 +136,34 @@ export function CouponDetail({ coupon, onBack }: CouponDetailProps) {
               />
             </div>
           </div>
-          <p className="text-xs text-gray-600 mb-3">
-            Presenta este código QR en el establecimiento para aplicar tu descuento
-          </p>
+          <p className="text-xs text-gray-600 mb-3">{t("detail.qrDescription")}</p>
           <div className="bg-gray-100 rounded-lg p-2 font-mono text-xs text-gray-700">
-            CUPON-{coupon.id}-{coupon.category.toUpperCase()}-2024
+            FULLDAYGO-{coupon.id}-{coupon.category.toUpperCase()}-2024
           </div>
         </Card>
 
         {/* Términos y condiciones */}
         <Card className="p-3 bg-white/20 backdrop-blur-xl border border-white/30">
-          <h4 className="font-semibold text-gray-800 mb-2 text-sm">Términos y Condiciones</h4>
+          <h4 className="font-semibold text-gray-800 mb-2 text-sm">{t("detail.terms")}</h4>
           <ul className="text-xs text-gray-600 space-y-1">
-            <li>• Válido solo para una persona por cupón</li>
-            <li>• No acumulable con otras promociones</li>
-            <li>• Sujeto a disponibilidad</li>
-            <li>• Reserva previa requerida</li>
-            <li>• No reembolsable</li>
+            <li>{t("detail.term1")}</li>
+            <li>{t("detail.term2")}</li>
+            <li>{t("detail.term3")}</li>
+            <li>{t("detail.term4")}</li>
+            <li>{t("detail.term5")}</li>
           </ul>
         </Card>
 
         {/* Botones de acción */}
         <div className="space-y-2 pb-4">
           <Button className="w-full h-11 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl text-sm">
-            Usar Cupón Ahora
+            {t("detail.useNow")}
           </Button>
           <Button
             variant="outline"
             className="w-full h-11 bg-white/20 backdrop-blur-xl border border-white/40 text-gray-700 rounded-xl text-sm"
           >
-            Compartir con Amigos
+            {t("detail.share")}
           </Button>
         </div>
       </div>

@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Mountain, Wine, User, Bell, Search, MapPin, Calendar, Percent } from "lucide-react"
+import { useLanguage } from "@/contexts/language-context"
+import { LanguageToggle } from "@/components/language-toggle"
 import Image from "next/image"
 
 interface HomeScreenProps {
@@ -13,62 +15,64 @@ interface HomeScreenProps {
   onProfileOpen: () => void
 }
 
-const coupons = [
-  {
-    id: 1,
-    title: "Esquí en Cerro Catedral",
-    description: "Descuento del 25% en pases de esquí para toda la familia en Bariloche",
-    discount: "25% OFF",
-    location: "Bariloche, Río Negro",
-    validUntil: "31 Dic 2024",
-    image: "/bariloche-skiing.png",
-    category: "Nieve",
-    originalPrice: "$15.000",
-    discountedPrice: "$11.250",
-    qrCode: "/qr-code.png",
-  },
-  {
-    id: 2,
-    title: "Bodega Catena Zapata",
-    description: "Tour premium con degustación de vinos Malbec y almuerzo gourmet",
-    discount: "30% OFF",
-    location: "Mendoza, Argentina",
-    validUntil: "15 Ene 2025",
-    image: "/mendoza-vineyard.png",
-    category: "Vinos",
-    originalPrice: "$8.500",
-    discountedPrice: "$5.950",
-    qrCode: "/qr-code.png",
-  },
-  {
-    id: 3,
-    title: "Las Leñas Ski Resort",
-    description: "Paquete completo: hospedaje + ski pass + clases para principiantes",
-    discount: "40% OFF",
-    location: "Las Leñas, Mendoza",
-    validUntil: "30 Sep 2024",
-    image: "/las-lenas-ski-resort.png",
-    category: "Nieve",
-    originalPrice: "$45.000",
-    discountedPrice: "$27.000",
-    qrCode: "/qr-code.png",
-  },
-  {
-    id: 4,
-    title: "Ruta del Vino Maipú",
-    description: "Recorrido en bicicleta por 3 bodegas boutique con almuerzo incluido",
-    discount: "20% OFF",
-    location: "Maipú, Mendoza",
-    validUntil: "28 Feb 2025",
-    image: "/mendoza-vineyard-bike-tour.png",
-    category: "Vinos",
-    originalPrice: "$12.000",
-    discountedPrice: "$9.600",
-    qrCode: "/qr-code.png",
-  },
-]
-
 export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenProps) {
+  const { t } = useLanguage()
+
+  const coupons = [
+    {
+      id: 1,
+      titleKey: "coupon.skiing.title",
+      descriptionKey: "coupon.skiing.description",
+      locationKey: "coupon.skiing.location",
+      discount: "25% OFF",
+      validUntil: "31 Dic 2024",
+      image: "/bariloche-skiing.png",
+      category: "Nieve",
+      originalPrice: "$15.000",
+      discountedPrice: "$11.250",
+      qrCode: "/qr-code.png",
+    },
+    {
+      id: 2,
+      titleKey: "coupon.winery.title",
+      descriptionKey: "coupon.winery.description",
+      locationKey: "coupon.winery.location",
+      discount: "30% OFF",
+      validUntil: "15 Ene 2025",
+      image: "/mendoza-vineyard.png",
+      category: "Vinos",
+      originalPrice: "$8.500",
+      discountedPrice: "$5.950",
+      qrCode: "/qr-code.png",
+    },
+    {
+      id: 3,
+      titleKey: "coupon.lasLenas.title",
+      descriptionKey: "coupon.lasLenas.description",
+      locationKey: "coupon.lasLenas.location",
+      discount: "40% OFF",
+      validUntil: "30 Sep 2024",
+      image: "/las-lenas-ski-resort.png",
+      category: "Nieve",
+      originalPrice: "$45.000",
+      discountedPrice: "$27.000",
+      qrCode: "/qr-code.png",
+    },
+    {
+      id: 4,
+      titleKey: "coupon.wineRoute.title",
+      descriptionKey: "coupon.wineRoute.description",
+      locationKey: "coupon.wineRoute.location",
+      discount: "20% OFF",
+      validUntil: "28 Feb 2025",
+      image: "/mendoza-vineyard-bike-tour.png",
+      category: "Vinos",
+      originalPrice: "$12.000",
+      discountedPrice: "$9.600",
+      qrCode: "/qr-code.png",
+    },
+  ]
+
   return (
     <div className="h-full overflow-y-auto">
       {/* Header con efecto liquid glass */}
@@ -80,11 +84,14 @@ export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenPr
               <AvatarFallback className="text-xs">{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-sm font-medium text-gray-800">Hola, {user.name.split(" ")[0]}</p>
-              <p className="text-xs text-gray-600">Descubre ofertas exclusivas</p>
+              <p className="text-sm font-medium text-gray-800">
+                {t("home.hello")}, {user.name.split(" ")[0]}
+              </p>
+              <p className="text-xs text-gray-600">{t("home.subtitle")}</p>
             </div>
           </div>
           <div className="flex items-center space-x-1">
+            <LanguageToggle />
             <Button
               variant="ghost"
               size="sm"
@@ -110,7 +117,7 @@ export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenPr
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input
             type="text"
-            placeholder="Buscar cupones..."
+            placeholder={t("home.search")}
             className="w-full pl-10 pr-4 py-2.5 bg-white/30 backdrop-blur-xl border border-white/40 rounded-xl text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm"
           />
         </div>
@@ -120,17 +127,17 @@ export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenPr
           <Card className="p-3 bg-white/20 backdrop-blur-xl border border-white/30 text-center">
             <Percent className="w-5 h-5 mx-auto mb-1 text-green-600" />
             <p className="text-lg font-bold text-gray-800">12</p>
-            <p className="text-xs text-gray-600">Cupones activos</p>
+            <p className="text-xs text-gray-600">{t("home.activeCoupons")}</p>
           </Card>
           <Card className="p-3 bg-white/20 backdrop-blur-xl border border-white/30 text-center">
             <Calendar className="w-5 h-5 mx-auto mb-1 text-blue-600" />
             <p className="text-lg font-bold text-gray-800">5</p>
-            <p className="text-xs text-gray-600">Usados este mes</p>
+            <p className="text-xs text-gray-600">{t("home.usedThisMonth")}</p>
           </Card>
           <Card className="p-3 bg-white/20 backdrop-blur-xl border border-white/30 text-center">
             <MapPin className="w-5 h-5 mx-auto mb-1 text-purple-600" />
             <p className="text-lg font-bold text-gray-800">$25K</p>
-            <p className="text-xs text-gray-600">Ahorrado</p>
+            <p className="text-xs text-gray-600">{t("home.saved")}</p>
           </Card>
         </div>
 
@@ -138,11 +145,11 @@ export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenPr
         <div className="flex space-x-2">
           <Badge className="bg-blue-500/20 text-blue-700 border-blue-300/50 backdrop-blur-xl text-xs">
             <Mountain className="w-3 h-3 mr-1" />
-            Nieve
+            {t("home.snow")}
           </Badge>
           <Badge className="bg-purple-500/20 text-purple-700 border-purple-300/50 backdrop-blur-xl text-xs">
             <Wine className="w-3 h-3 mr-1" />
-            Vinos
+            {t("home.wine")}
           </Badge>
         </div>
 
@@ -152,12 +159,19 @@ export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenPr
             <Card
               key={coupon.id}
               className="overflow-hidden bg-white/20 backdrop-blur-xl border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-              onClick={() => onCouponSelect(coupon)}
+              onClick={() =>
+                onCouponSelect({
+                  ...coupon,
+                  title: t(coupon.titleKey),
+                  description: t(coupon.descriptionKey),
+                  location: t(coupon.locationKey),
+                })
+              }
             >
               <div className="relative">
                 <Image
                   src={coupon.image || "/placeholder.svg"}
-                  alt={coupon.title}
+                  alt={t(coupon.titleKey)}
                   width={400}
                   height={160}
                   className="w-full h-32 object-cover"
@@ -176,19 +190,19 @@ export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenPr
                     ) : (
                       <Wine className="w-2 h-2 mr-1" />
                     )}
-                    {coupon.category}
+                    {coupon.category === "Nieve" ? t("home.snow") : t("home.wine")}
                   </Badge>
                 </div>
               </div>
 
               <div className="p-3">
-                <h3 className="font-bold text-sm text-gray-800 mb-1">{coupon.title}</h3>
-                <p className="text-gray-600 text-xs mb-2 line-clamp-2">{coupon.description}</p>
+                <h3 className="font-bold text-sm text-gray-800 mb-1">{t(coupon.titleKey)}</h3>
+                <p className="text-gray-600 text-xs mb-2 line-clamp-2">{t(coupon.descriptionKey)}</p>
 
                 <div className="flex items-center justify-between mb-2 text-xs">
                   <div className="flex items-center text-gray-500">
                     <MapPin className="w-2 h-2 mr-1" />
-                    {coupon.location}
+                    {t(coupon.locationKey)}
                   </div>
                   <div className="flex items-center text-gray-500">
                     <Calendar className="w-2 h-2 mr-1" />
@@ -205,7 +219,7 @@ export function HomeScreen({ user, onCouponSelect, onProfileOpen }: HomeScreenPr
                     size="sm"
                     className="bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg text-xs px-3 py-1"
                   >
-                    Ver cupón
+                    {t("home.viewCoupon")}
                   </Button>
                 </div>
               </div>
