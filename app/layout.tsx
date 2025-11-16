@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { ClerkProvider } from '@clerk/nextjs'
+import { esCL } from '@clerk/localizations'
 
 export const metadata: Metadata = {
   title: 'v0 App',
@@ -13,8 +15,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
+    <ClerkProvider localization={esCL} appearance={{ variables: { colorPrimary: '#0070f3' } }}>
+      <html lang="es-CL">
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   )
 }
