@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useClerk, useSignIn } from "@clerk/nextjs"
+import { clerkEnabled } from "@/lib/clerk-config"
 
 import "@/design/login-theme/global.css"
 import "@/design/login-theme/components.css"
@@ -45,6 +46,32 @@ export function UnifiedLogin({
   enableGoogle = true,
   onAfterSignIn,
 }: UnifiedLoginProps) {
+  if (!clerkEnabled) {
+    return (
+      <div
+        className="so-login-wrapper"
+        style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
+      >
+        <div className="so-login-card">
+          <div className="so-login-card-content">
+            <header className="so-login-header">
+              <img src={logoSrc} alt="SmarterOS" className="so-login-logo" />
+              <p className="so-tenant-badge">Tenant · {tenant ? tenant.toUpperCase() : "DEFAULT"}</p>
+              <h1 className="so-login-title">Login corporativo en espera</h1>
+              <p className="so-login-subtitle">Configura las llaves de Clerk para habilitar este acceso.</p>
+            </header>
+            <div className="so-login-status error">
+              Falta configurar <code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> y <code>CLERK_SECRET_KEY</code>.
+            </div>
+            <footer className="so-login-footer">
+              Revisa la guía en README o KEYS-REQUIRED.md para completar la configuración.
+            </footer>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const { signIn, isLoaded } = useSignIn()
   const { setActive } = useClerk()
 
