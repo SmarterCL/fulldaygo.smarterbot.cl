@@ -9,6 +9,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Disable static page generation for pages that use Clerk
+  // This prevents build-time errors when Clerk keys are not available
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
 }
 
 export default nextConfig

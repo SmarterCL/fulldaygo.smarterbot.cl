@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/contexts/language-context"
-import { useSignIn } from "@clerk/nextjs"
 
 interface LoginScreenProps {
   onLogin: (user: any) => void
@@ -14,7 +13,6 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
   const { t } = useLanguage()
-  const { signIn } = useSignIn()
 
   const handleGoogleLogin = () => {
     const mockUser = {

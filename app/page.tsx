@@ -1,12 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useUser } from "@clerk/nextjs"
+import { useUser } from "@/lib/useUser"
 import { LoginScreen } from "@/components/login-screen"
 import { HomeScreen } from "@/components/home-screen"
 import { CouponDetail } from "@/components/coupon-detail"
 import { ProfileScreen } from "@/components/profile-screen"
 import { LanguageProvider } from "@/contexts/language-context"
+
+// Force dynamic rendering to avoid prerendering issues with Clerk
+export const dynamic = 'force-dynamic'
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<"login" | "home" | "coupon" | "profile">("login")
