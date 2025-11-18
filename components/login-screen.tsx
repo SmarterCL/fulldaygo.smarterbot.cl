@@ -25,17 +25,8 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
     onLogin(mockUser)
   }
 
-  const handleSmarterOSLogin = async () => {
-    if (!signIn) return
-    try {
-      await signIn.authenticateWithRedirect({
-        strategy: "oauth_google",
-        redirectUrl: "/sso-callback",
-        redirectUrlComplete: "/",
-      })
-    } catch (error) {
-      console.error("Error signing in:", error)
-    }
+  const handleSmarterOSLogin = () => {
+    window.location.href = "https://app.smarterbot.cl"
   }
 
   return (
