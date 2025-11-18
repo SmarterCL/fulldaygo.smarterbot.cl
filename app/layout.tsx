@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
-import { esCL } from '@clerk/localizations'
+import { esES } from '@clerk/localizations'
+import { clerkEnabled, clerkPublishableKey } from '@/lib/clerk-config'
 
 export const metadata: Metadata = {
   title: 'v0 App',
@@ -14,11 +15,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const html = (
+    <html lang="es-CL">
+      <body>{children}</body>
+    </html>
+  )
+
+  if (!clerkEnabled) {
+    return html
+  }
+
   return (
-    <ClerkProvider localization={esCL} appearance={{ variables: { colorPrimary: '#0070f3' } }}>
-      <html lang="es-CL">
-        <body>{children}</body>
-      </html>
+    <ClerkProvider
+      localization={esES}
+      publishableKey={clerkPublishableKey!}
+      appearance={{ variables: { colorPrimary: '#0070f3' } }}
+    >
+      {html}
     </ClerkProvider>
   )
 }
