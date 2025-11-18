@@ -1,5 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { clerkEnabled } from '@/lib/clerk-config'
+import { NextResponse } from 'next/server'
 
 // Rutas públicas que no requieren autenticación
 const isPublicRoute = createRouteMatcher([
@@ -8,9 +8,19 @@ const isPublicRoute = createRouteMatcher([
   '/api/mcp(.*)', // MCP endpoints públicos para diagnóstico
 ])
 
+// Verificar si Clerk está configurado
+const clerkEnabled = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) && 
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_placeholder' &&
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_Y2xlcmsuc21hcnRlcmJvdC5jbCQ'
+
 export default clerkMiddleware(async (auth, request) => {
+  // Si Clerk no está configurado, permitir acceso público
+  if (!clerkEnabled) {
+    return NextResponse.next()
+  }
+  
   // Solo proteger rutas si Clerk está configurado
-  if (clerkEnabled && !isPublicRoute(request)) {
+  if (!isPublicRoute(request)) {
     await auth.protect()
   }
 })
