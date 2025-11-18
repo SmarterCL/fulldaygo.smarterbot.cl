@@ -244,3 +244,16 @@ Una vez configurado Clerk:
 6. [ ] Configurar webhooks de Clerk
 7. [ ] Implementar gate de Shopify (si aplica)
 8. [ ] Deploy a producción
+
+## Actualizaciones de Seguridad
+
+### Client Trust Credential Stuffing Protection (Habilitado: 2025-11-18)
+
+Clerk ha habilitado protección contra ataques de credential stuffing. Cuando los usuarios inician sesión desde un nuevo dispositivo, se les solicitará un segundo factor de autenticación:
+
+- **Si tienen 2FA configurado**: Se usa su método 2FA
+- **Si NO tienen 2FA**: Se envía automáticamente un código por email/SMS o magic link
+
+**Compatibilidad**: ✅ Esta aplicación usa componentes Clerk predeterminados (`<SignIn>` y `<SignUp>`) que manejan automáticamente estos flujos.
+
+**Documentación completa**: Ver `CLERK-SECURITY-UPDATE.md`
