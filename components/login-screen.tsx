@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/contexts/language-context"
-import { UnifiedLogin } from "@/templates/login/UnifiedLogin"
-import { syncToSupabase } from "@/lib/supabase-sync"
-import { clerkEnabled } from "@/lib/clerk-config"
+import { useSignIn } from "@clerk/nextjs"
 
 interface LoginScreenProps {
   onLogin: (user: any) => void
@@ -16,11 +14,7 @@ interface LoginScreenProps {
 
 export function LoginScreen({ onLogin }: LoginScreenProps) {
   const { t } = useLanguage()
-  const [showCorporateLogin, setShowCorporateLogin] = useState(false)
-
-  const corporateDashboardUrl = process.env.NEXT_PUBLIC_SMARTERBOT_DASHBOARD_URL || "https://app.smarterbot.cl/dashboard"
-  const googleRedirectUrl = process.env.NEXT_PUBLIC_SMARTERBOT_GOOGLE_REDIRECT || "/sso-callback"
-  const smarterbotTenant = process.env.NEXT_PUBLIC_SMARTERBOT_TENANT || "smarterbot"
+  const { signIn } = useSignIn()
 
   const handleGoogleLogin = () => {
     const mockUser = {
@@ -29,6 +23,19 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
       avatar: "/woman-profile.png",
     }
     onLogin(mockUser)
+  }
+
+  const handleSmarterOSLogin = async () => {
+    if (!signIn) return
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/",
+      })
+    } catch (error) {
+      console.error("Error signing in:", error)
+    }
   }
 
   return (
@@ -100,19 +107,13 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                   {t("login.continueGoogle")}
                 </Button>
 
-                {clerkEnabled ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowCorporateLogin(true)}
-                    className="w-full h-11 border-white/60 text-gray-800 font-medium rounded-xl transition-all duration-300 bg-white/40 backdrop-blur-xl hover:bg-white/60"
-                  >
-                    Conectar con SmarterOS
-                  </Button>
-                ) : (
-                  <div className="text-center text-xs text-red-100 bg-red-500/30 border border-red-200/40 rounded-xl px-3 py-2 backdrop-blur">
-                    Configura las llaves de Clerk para habilitar el login corporativo.
-                  </div>
-                )}
+                <Button
+                  variant="outline"
+                  onClick={handleSmarterOSLogin}
+                  className="w-full h-11 border-white/60 text-gray-800 font-medium rounded-xl transition-all duration-300 bg-white/40 backdrop-blur-xl hover:bg-white/60"
+                >
+                  Conectar con SmarterOS
+                </Button>
 
                 <div className="text-center text-xs text-gray-500">{t("login.terms")}</div>
               </div>
@@ -120,24 +121,6 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           </div>
         </div>
       </div>
-
-      {showCorporateLogin && clerkEnabled ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="absolute top-6 right-6">
-            <Button variant="ghost" className="text-white" onClick={() => setShowCorporateLogin(false)}>
-              Cerrar
-            </Button>
-          </div>
-          <div className="w-full max-w-lg">
-            <UnifiedLogin
-              tenant={smarterbotTenant}
-              redirectUrl={corporateDashboardUrl}
-              googleRedirectUrl={googleRedirectUrl}
-              onAfterSignIn={syncToSupabase}
-            />
-          </div>
-        </div>
-      ) : null}
     </>
   )
 }

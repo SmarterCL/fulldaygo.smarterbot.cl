@@ -7,13 +7,12 @@ import { HomeScreen } from "@/components/home-screen"
 import { CouponDetail } from "@/components/coupon-detail"
 import { ProfileScreen } from "@/components/profile-screen"
 import { LanguageProvider } from "@/contexts/language-context"
-import { clerkEnabled } from "@/lib/clerk-config"
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<"login" | "home" | "coupon" | "profile">("login")
   const [selectedCoupon, setSelectedCoupon] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
-  const { isSignedIn, user: clerkUser } = clerkEnabled ? useUser() : { isSignedIn: false, user: null }
+  const { isSignedIn, user: clerkUser } = useUser()
 
   const handleLogin = (userData: any) => {
     setUser(userData)
