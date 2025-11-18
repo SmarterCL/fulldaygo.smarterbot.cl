@@ -1,29 +1,53 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 // Rutas públicas que no requieren autenticación
-const isPublicRoute = createRouteMatcher([
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/mcp(.*)', // MCP endpoints públicos para diagnóstico
-])
+const publicRoutes = [
+  '/sign-in',
+  '/sign-up',
+  '/api/mcp'
+]
 
-// Verificar si Clerk está configurado
+// Verificar si Clerk está configurado correctamente
 const clerkEnabled = Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) && 
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_placeholder' &&
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_Y2xlcmsuc21hcnRlcmJvdC5jbCQ'
+  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_Y2xlcmsuc21hcnRlcmJvdC5jbCQ' &&
+  Boolean(process.env.CLERK_SECRET_KEY) &&
+  process.env.CLERK_SECRET_KEY !== 'sk_test_placeholder'
 
-export default clerkMiddleware(async (auth, request) => {
-  // Si Clerk no está configurado, permitir acceso público
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  
+  // Permitir acceso a rutas públicas
+  if (publicRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.next()
+  }
+  
+  // Si Clerk no está configurado, permitir acceso a todas las rutas
   if (!clerkEnabled) {
     return NextResponse.next()
   }
   
-  // Solo proteger rutas si Clerk está configurado
-  if (!isPublicRoute(request)) {
-    await auth.protect()
+  // Si Clerk está configurado, importar y usar el middleware de Clerk
+  try {
+    const { clerkMiddleware, createRouteMatcher } = await import('@clerk/nextjs/server')
+    
+    const isPublicRoute = createRouteMatcher([
+      '/sign-in(.*)',
+      '/sign-up(.*)',
+      '/api/mcp(.*)',
+    ])
+    
+    return clerkMiddleware(async (auth, req) => {
+      if (!isPublicRoute(req)) {
+        await auth.protect()
+      }
+    })(request, {} as any)
+  } catch (error) {
+    console.error('Clerk middleware error:', error)
+    return NextResponse.next()
   }
-})
+}
 
 export const config = {
   matcher: [
