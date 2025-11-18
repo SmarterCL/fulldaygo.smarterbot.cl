@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { clerkClient } from "@clerk/nextjs/server"
+import { auth, clerkClient } from "@clerk/nextjs/server"
 
 /**
  * MCP Endpoint para configuración de Clerk
@@ -33,7 +33,7 @@ export async function GET() {
       try {
         const client = await clerkClient()
         // Intentar una operación simple para validar la conexión
-        await client.users.getCount()
+        const { totalCount } = await client.users.getUserList({ limit: 1 })
         config.connectionValid = true
       } catch (error) {
         config.connectionValid = false
