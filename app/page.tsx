@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useUser } from "@clerk/nextjs"
 import { LoginScreen } from "@/components/login-screen"
 import { HomeScreen } from "@/components/home-screen"
 import { CouponDetail } from "@/components/coupon-detail"
@@ -11,11 +12,28 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<"login" | "home" | "coupon" | "profile">("login")
   const [selectedCoupon, setSelectedCoupon] = useState<any>(null)
   const [user, setUser] = useState<any>(null)
+  const { isSignedIn, user: clerkUser } = useUser()
 
   const handleLogin = (userData: any) => {
     setUser(userData)
     setCurrentScreen("home")
   }
+
+  useEffect(() => {
+    if (isSignedIn && clerkUser) {
+      const normalizedUser = {
+        name:
+          `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim() ||
+          clerkUser.username ||
+          clerkUser.emailAddresses[0]?.emailAddress ||
+          "Usuario",
+        email: clerkUser.emailAddresses[0]?.emailAddress ?? "sin-correo@smarterbot.cl",
+        avatar: clerkUser.imageUrl || "/placeholder-user.jpg",
+      }
+      setUser(normalizedUser)
+      setCurrentScreen((prev) => (prev === "login" ? "home" : prev))
+    }
+  }, [isSignedIn, clerkUser])
 
   const handleCouponSelect = (coupon: any) => {
     setSelectedCoupon(coupon)

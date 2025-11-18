@@ -115,3 +115,15 @@ Si necesitas ayuda para obtener las keys:
 - Dashboard Clerk: https://dashboard.clerk.com/
 - Docs Clerk: https://clerk.com/docs/quickstarts/nextjs
 - Support: https://clerk.com/support
+
+## Variables para Login Compartido SmarterOS
+
+Para conectar el login de esta app con el dashboard `app.smarterbot.cl`, agrega también:
+
+```
+NEXT_PUBLIC_SMARTERBOT_DASHBOARD_URL=https://app.smarterbot.cl/dashboard
+NEXT_PUBLIC_SMARTERBOT_GOOGLE_REDIRECT=https://app.smarterbot.cl/sso-callback
+NEXT_PUBLIC_SMARTERBOT_TENANT=smarterbot
+```
+
+Si necesitas apuntar a otro tenant o entorno, solo cambia estos valores.
